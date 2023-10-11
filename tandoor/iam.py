@@ -1,13 +1,14 @@
-import pulumi_kubernetes as k8s
+from pulumi_kubernetes import core, meta
 
-import tandoor.config as config
+from tandoor.config import app_label, tandoor_namespace, app_name
 
-service_account = k8s.core.v1.ServiceAccount(
-    "tandoor-service-account",
+service_account = core.v1.ServiceAccount(
+    f"{app_name}-service-account",
     api_version="v1",
     kind="ServiceAccount",
-    metadata=k8s.meta.v1.ObjectMetaArgs(
-        name="tandoor-service-account",
-        namespace=config.tandoor_namespace.namespace.metadata["name"],
+    metadata=meta.v1.ObjectMetaArgs(
+        name=f"{app_name}-service-account",
+        labels=app_label,
+        namespace=tandoor_namespace.namespace.metadata["name"],
     ),
 )

@@ -1,19 +1,21 @@
-# import pulumi
-# import pulumi_kubernetes as k8s
-# import modules.pvc as Pvc
-#
-# # Get Config
-# config = pulumi.Config("tandoor")
-#
-# # Setup Vars
-# label = "tandoor"
-#
-# # Create PVCs
-# media_pvc = Pvc.PVC(
-#     name="tandoor-media-pvc",
-#     args=Pvc.PvcArgs(
-#         name="tandoor-media",
-#         app_label=label,
-#         volume_size="1Gi",
-#     ),
-# )
+import modules.pvc as pvc
+import tandoor.config as config
+
+# Import Vars
+volume_size = config.tandoorConfig.get("volume-size", default="1Gi")
+namespace = config.tandoor_namespace.namespace.metadata["name"]
+
+# Create PVCs
+media_pvc = pvc.K8sPVC(
+    name=f"{config.app_name}-media",
+    namespace=namespace,
+    app_label=config.app_label,
+    volume_size=volume_size,
+)
+
+static_pvc = pvc.K8sPVC(
+    name=f"{config.app_name}-static",
+    namespace=namespace,
+    app_label=config.app_label,
+    volume_size=volume_size,
+)

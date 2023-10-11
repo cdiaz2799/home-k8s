@@ -1,37 +1,47 @@
-# from pulumi import ResourceOptions, ComponentResource, Input
-# from pulumi_kubernetes.core.v1 import (
-#     ObjectMetaArgs,
-# )
-#
-#
-# class PvcArgs:
-#     def __init__(
-#         name: Input[str],
-#         app_label: Input[str],
-#         volume_size: Input[str],
-#     ):
-#         self.name = (name,)
-#         self.app_label = (app_label,)
-#         self.volume_size = (volume_size,)
-#
-#
-# class PVC(ComponentResource):
-#     def __init__(self, name: str, args: PvcArgs, opts: ResourceOptions = None):
-#         super().__init__("custom:k8:PersistentVolumeClaim", name, {}, opts)
-#
-#         child_opts = ResourceOptions(parent=self)
-#
-#         self.pvc = PersistentVolumeClaim(
-#             name,
-#             metadata=ObjectMetaArgs(
-#                 name=name,
-#                 labels=(
-#                     {
-#                         "app": args.app_label,
-#                     },
-#                 ),
-#             ),
-#             spec=
-#             opts=child_opts,
-#         )
-#         self.register_outputs({})
+from typing import Dict
+
+from pulumi import ResourceOptions, ComponentResource
+from pulumi_kubernetes.core.v1 import (
+    PersistentVolumeClaim,
+    PersistentVolumeClaimInitArgs,
+    PersistentVolumeClaimSpecArgs,
+    ResourceRequirementsArgs,
+)
+from pulumi_kubernetes.meta.v1 import ObjectMetaArgs
+
+
+class K8sPVC(ComponentResource):
+    def __init__(
+        self,
+        name: str,
+        namespace: str,
+        app_label: Dict[str, str],
+        volume_size: str,
+        opts: ResourceOptions = None,
+    ):
+        super().__init__("custom:k8s:pvc", name, {}, opts)
+
+        # Create PVC
+        self.pvc = PersistentVolumeClaim(
+            name,
+            args=PersistentVolumeClaimInitArgs(
+                api_version="v1",
+                metadata=ObjectMetaArgs(
+                    name=name,
+                    namespace=namespace,
+                    labels=app_label,
+                ),
+                spec=PersistentVolumeClaimSpecArgs(
+                    access_modes=["ReadWriteOnce"],
+                    resources=ResourceRequirementsArgs(
+                        requests={
+                            "storage": volume_size,
+                        },
+                    ),
+                ),
+            ),
+            opts=ResourceOptions(parent=self),
+        )
+
+        # Register Outputs
+        self.register_outputs({"pvc": self.pvc.metadata["name"]})

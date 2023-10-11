@@ -1,6 +1,7 @@
 config:
   kubernetes:context: microk8s
+  tandoor:ingress-host: recipes.local
   tandoor:postgres-pw:
-    secure: AAABAIqir8puuc4s89m2muZXkOoOdjaqBoeoYhZrtTcUNboxKbbUELPtBA==
+    secure: AAABALgI52oA0IZGiIHqyzpitiKubwBrTX4IX5cFIDm8G/1U1Ld2S0pU+TNzgJ6BXayNv8FAkBc=
   tandoor:secret-key:
     secure: AAABAHpU7Gfccl7DldBpsV1Vj5ajGbE4kFx02BGsAbbVuqCY/C+dZImKsAHcR2DoD/OU3ebft8BbyQuwR12KR0GKaXDH4LsC+DlJyyzZQzTbyedAxem1i3TleDsAbcOfxi/2uhKaRN06YeC+TPmzn4RCNpTO9lrQ
