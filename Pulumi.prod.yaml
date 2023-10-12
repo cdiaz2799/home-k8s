@@ -1,6 +1,12 @@
 config:
+  actual:actual-hostname: actual.cdiaz.cloud
+  home-k8s:cloudflare-account-id:
+    secure: AAABANjlqNWmfm/LEU3KrWVXJCAwyTOQQkpwe6KhX46KHa/abxNlB5p3IlMMPEy8wGcogJFcml9QFJBeIdjFKw==
+  home-k8s:cloudflare-tunnel-id:
+    secure: AAABACNvjElLRA8tn2yVdQaYAgKlb4ug/H2lpKlADS4UgN+uWDJFXL1aNohN56wvibHK7+zQebSJQbnl65UXxHfZIGM=
   kubernetes:context: microk8s
-  tandoor:ingress-host: recipes.local
+  tandoor:hostname: tandoor.cdiaz.cloud
+  tandoor:ingress-host: recipes.cdiaz.cloud
   tandoor:postgres-pw:
     secure: AAABALgI52oA0IZGiIHqyzpitiKubwBrTX4IX5cFIDm8G/1U1Ld2S0pU+TNzgJ6BXayNv8FAkBc=
   tandoor:secret-key:

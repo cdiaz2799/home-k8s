@@ -1,5 +1,6 @@
 import importlib
 import os
+import pulumi_cloudflare as cf
 
 
 def import_and_execute_functions(directory):
