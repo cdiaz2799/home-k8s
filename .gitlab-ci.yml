@@ -40,6 +40,9 @@ blue:
   stage: linting
   script:
     - blue --check -- .
+  only:
+    - merge_requests
+
 
 pylint:
   stage: test
