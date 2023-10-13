@@ -27,8 +27,6 @@ preview:
   stage: infrastructure-update
   script:
     - pulumi preview --diff --non-interactive
-  only:
-    - merge_requests
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_OPEN_MERGE_REQUESTS
