@@ -14,7 +14,7 @@ class K8sSecret(pulumi.ComponentResource):
         secrets: Dict[str, str],
         opts: pulumi.ResourceOptions = None,
     ):
-        super().__init__("custom:k8s:secrets", name, {}, opts)
+        super().__init__('custom:k8s:secrets', name, {}, opts)
 
         # Create Secrets
         self.secret = Secret(
@@ -25,11 +25,11 @@ class K8sSecret(pulumi.ComponentResource):
                     namespace=namespace,
                     labels=app_label,
                 ),
-                type="Opaque",
+                type='Opaque',
                 string_data=secrets,
             ),
             opts=pulumi.ResourceOptions(parent=self),
         )
 
         # Register Outputs
-        self.register_outputs({"secrets": self.secret.metadata["name"]})
+        self.register_outputs({'secrets': self.secret.metadata['name']})
