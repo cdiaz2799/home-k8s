@@ -1,6 +1,6 @@
 from typing import Dict
 
-from pulumi import ResourceOptions, ComponentResource
+from pulumi import ComponentResource, ResourceOptions
 from pulumi_kubernetes.core.v1 import (
     PersistentVolumeClaim,
     PersistentVolumeClaimInitArgs,
@@ -19,23 +19,23 @@ class K8sPVC(ComponentResource):
         volume_size: str,
         opts: ResourceOptions = None,
     ):
-        super().__init__("custom:k8s:pvc", name, {}, opts)
+        super().__init__('custom:k8s:pvc', name, {}, opts)
 
         # Create PVC
         self.pvc = PersistentVolumeClaim(
             name,
             args=PersistentVolumeClaimInitArgs(
-                api_version="v1",
+                api_version='v1',
                 metadata=ObjectMetaArgs(
                     name=name,
                     namespace=namespace,
                     labels=app_label,
                 ),
                 spec=PersistentVolumeClaimSpecArgs(
-                    access_modes=["ReadWriteOnce"],
+                    access_modes=['ReadWriteOnce'],
                     resources=ResourceRequirementsArgs(
                         requests={
-                            "storage": volume_size,
+                            'storage': volume_size,
                         },
                     ),
                 ),
@@ -44,4 +44,4 @@ class K8sPVC(ComponentResource):
         )
 
         # Register Outputs
-        self.register_outputs({"pvc": self.pvc.metadata["name"]})
+        self.register_outputs({'pvc': self.pvc.metadata['name']})
