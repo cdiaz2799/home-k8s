@@ -38,12 +38,19 @@ deployment = kubernetes.apps.v1.Deployment(
                         name=app_name,
                         ports=[
                             kubernetes.core.v1.ContainerPortArgs(
+                                name="http",
                                 container_port=5006,
                                 host_port=app_port,
                                 protocol="TCP",
                             )
                         ],
                         resources=kubernetes.core.v1.ResourceRequirementsArgs(),
+                        env=[
+                            kubernetes.core.v1.EnvVarArgs(
+                                name="DEBUG",
+                                value="actual:config",
+                            )
+                        ],
                         volume_mounts=[
                             kubernetes.core.v1.VolumeMountArgs(
                                 mount_path="/data",
