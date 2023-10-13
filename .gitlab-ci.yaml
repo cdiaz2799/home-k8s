@@ -1,0 +1,52 @@
+image: pulumi/pulumi-python:3.88.1
+
+include:
+  - template: Security/Secret-Detection.gitlab-ci.yml
+  - template: Security/Dependency-Scanning.gitlab-ci.yml
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  PULUMI_STACK:
+cache:
+  paths:
+    - .cache/pip
+    - $HOME/.pulumi/bin
+    - venv/
+
+before_script:
+  - export PATH=$PATH:$HOME/.pulumi/bin
+  - pulumi login
+  - pip install -r requirements.txt
+  - pulumi stack select $PULUMI_STACK
+
+stages:
+  - preview
+  - build
+
+preview:
+  stage: infrastructure-update
+  script:
+    - pulumi preview --diff --non-interactive
+  only:
+  - merge_requests
+  rules:
+  - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  - if: $CI_OPEN_MERGE_REQUESTS
+    when: never
+  - if: $CI_COMMIT_BRANCH
+
+build:
+  stage: infrastructure-update
+  before_script:
+    - chmod +x ./scripts/*.sh
+    - ./scripts/setup.sh
+  script:
+    - pulumi up --yes --non-interactive
+  artifacts:
+    paths:
+    - pulumi-log.txt
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $TF_AUTO_DEPLOY == "true"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual
