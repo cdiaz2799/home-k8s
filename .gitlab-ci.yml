@@ -36,11 +36,11 @@ isort:
   only:
     - merge_requests
 
-black:
+blue:
   stage: linting
   image: registry.gitlab.com/pipeline-components/black:latest
   script:
-    - black --check --verbose -- .
+    - blue --check -- .
 
 pylint:
   stage: linting
