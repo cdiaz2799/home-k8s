@@ -38,7 +38,6 @@ isort:
 
 blue:
   stage: linting
-  image: registry.gitlab.com/pipeline-components/black:latest
   script:
     - blue --check -- .
 
