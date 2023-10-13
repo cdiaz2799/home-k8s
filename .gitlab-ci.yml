@@ -6,23 +6,56 @@ include:
 
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
-  PULUMI_STACK:
+  PULUMI_STACK: "prod"
 cache:
   paths:
     - .cache/pip
     - $HOME/.pulumi/bin
     - venv/
-
 before_script:
+  - python -V
+  - pip install virtualenv -q
+  - virtualenv venv
+  - source venv/bin/activate
+  - pip install --upgrade pip -q
+  - pip install -r requirements.txt -q
   - export PATH=$PATH:$HOME/.pulumi/bin
   - pulumi login
-  - pip install -r requirements.txt
   - pulumi stack select $PULUMI_STACK
 
 stages:
+  - linting
   - test
   - preview
   - build
+
+isort:
+  stage: linting
+  script:
+    - isort . --check-only
+  only:
+    - merge_requests
+
+black:
+  stage: linting
+  image: registry.gitlab.com/pipeline-components/black:latest
+  script:
+    - black --check --verbose -- .
+
+pylint:
+  stage: linting
+  script:
+    - pylint --exit-zero --load-plugins=pylint_gitlab --output-format=gitlab-codeclimate:codeclimate.json **/*.py
+  artifacts:
+    reports:
+      codequality: codeclimate.json
+    when: always
+
+secret_detection:
+  before_script: [ ]
+
+gemnasium-dependency_scanning:
+  before_script: [ ]
 
 preview:
   stage: preview
@@ -36,9 +69,6 @@ preview:
 
 build:
   stage: build
-  before_script:
-    - chmod +x ./scripts/*.sh
-    - ./scripts/setup.sh
   script:
     - pulumi up --yes --non-interactive
   artifacts:
