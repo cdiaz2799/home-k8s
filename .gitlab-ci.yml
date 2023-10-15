@@ -13,6 +13,7 @@ cache:
     - $HOME/.pulumi/bin
     - venv/
 before_script:
+  - pwd
   - ../venv/bin/pip install --no-color --upgrade -r requirements.txt
   - pulumi login
   - pulumi stack select $PULUMI_STACK
