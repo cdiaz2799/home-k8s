@@ -5,6 +5,7 @@ include:
   - template: Security/Dependency-Scanning.gitlab-ci.yml
 
 variables:
+  VENV_PATH: /pulumi/projects/venv
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   PULUMI_STACK: "prod"
 cache:
@@ -13,8 +14,8 @@ cache:
     - $HOME/.pulumi/bin
     - venv/
 before_script:
-  - pwd
-  - ../venv/bin/pip install --no-color --upgrade -r requirements.txt
+  - source $VENV_PATH/bin/activate
+  - $VENV_PATH/bin/pip install --no-color --upgrade -r requirements.txt
   - pulumi login
   - pulumi stack select $PULUMI_STACK
 
