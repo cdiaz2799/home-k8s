@@ -2,5 +2,5 @@ name: home-k8s
 runtime:
   name: python
   options:
-    virtualenv: $VENV_PATH
+    virtualenv: /pulumi/projects/venv
 description: A minimal Kubernetes Python Pulumi program
