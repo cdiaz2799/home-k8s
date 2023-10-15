@@ -12,8 +12,9 @@ cache:
   paths:
     - .cache/pip
     - $HOME/.pulumi/bin
-    - venv/
+    - $VENV_PATH
 before_script:
+  - kubectl config get-contexts
   - source $VENV_PATH/bin/activate
   - $VENV_PATH/bin/pip install --no-color --upgrade -r requirements.txt
   - pulumi login
