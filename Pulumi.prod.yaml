@@ -4,7 +4,19 @@ config:
     secure: AAABANjlqNWmfm/LEU3KrWVXJCAwyTOQQkpwe6KhX46KHa/abxNlB5p3IlMMPEy8wGcogJFcml9QFJBeIdjFKw==
   home-k8s:cloudflare-tunnel-id:
     secure: AAABACNvjElLRA8tn2yVdQaYAgKlb4ug/H2lpKlADS4UgN+uWDJFXL1aNohN56wvibHK7+zQebSJQbnl65UXxHfZIGM=
+  home-k8s:timezone: America/Phoenix
   kubernetes:context: microk8s
+  paperless:paperless-admin-email:
+    secure: AAABANAKPOm3EfbDtoPABbP6cqqZXxn4TqLvhfxCkDJTCKAXGdFoDecJW3JYXyLpPi+I/Ao=
+  paperless:paperless-admin-password:
+    secure: AAABAFxYgkqNJHles3+sapVPIxHIZ6HAB855X4YvSKB7yRm2zy2evrrz6yCmYn8=
+  paperless:paperless-admin-user:
+    secure: AAABABwrBXvzqS2uosQXosQLYfn4zzUsNQ0N1QqScc7DnuaOlA==
+  paperless:paperless-db-pw:
+    secure: AAABAKuB33LVT3Ib6A4DkUk6R/yRFlN3U2itzPWcoURgboJpnnE1054GvT//K2px45bPs04=
+  paperless:paperless-fqdn: paperless.cdiaz.cloud
+  paperless:paperless-secret-key:
+    secure: AAABAKEUSRWZEjT632Zftu9IyYNrBva+JkmeKwcCTneY/B+jCrWZBKiN+vGZ3NHI6st94J5FhxLHR3UTghWI5yW9mYDEQpTH3V+dvEKCsOMD6d50GESkmy3TMy20XZy4
   tandoor:hostname: tandoor.cdiaz.cloud
   tandoor:ingress-host: recipes.cdiaz.cloud
   tandoor:postgres-pw:
