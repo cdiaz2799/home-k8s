@@ -5,7 +5,6 @@ config:
   home-k8s:cloudflare-tunnel-id:
     secure: AAABACNvjElLRA8tn2yVdQaYAgKlb4ug/H2lpKlADS4UgN+uWDJFXL1aNohN56wvibHK7+zQebSJQbnl65UXxHfZIGM=
   home-k8s:timezone: America/Phoenix
-  kubernetes:context: microk8s
   paperless:paperless-admin-email:
     secure: AAABANAKPOm3EfbDtoPABbP6cqqZXxn4TqLvhfxCkDJTCKAXGdFoDecJW3JYXyLpPi+I/Ao=
   paperless:paperless-admin-password:
