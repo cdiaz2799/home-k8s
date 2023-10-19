@@ -1,12 +1,10 @@
 from typing import Dict
 
 from pulumi import ComponentResource, ResourceOptions
-from pulumi_kubernetes.core.v1 import (
-    PersistentVolumeClaim,
-    PersistentVolumeClaimInitArgs,
-    PersistentVolumeClaimSpecArgs,
-    ResourceRequirementsArgs,
-)
+from pulumi_kubernetes.core.v1 import (PersistentVolumeClaim,
+                                       PersistentVolumeClaimInitArgs,
+                                       PersistentVolumeClaimSpecArgs,
+                                       ResourceRequirementsArgs)
 from pulumi_kubernetes.meta.v1 import ObjectMetaArgs
 
 

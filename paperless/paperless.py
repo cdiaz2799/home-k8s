@@ -5,7 +5,6 @@ import modules.pvc as pvc
 import paperless.config as config
 import paperless.secrets as secrets
 
-
 # Setup Vars
 paperless_config = config.config
 namespace = config.namespace_name
