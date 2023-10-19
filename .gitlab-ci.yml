@@ -23,6 +23,7 @@ before_script:
   - $VENV_PATH/bin/pip install --no-color --upgrade -q -r requirements.txt
   - pulumi login
   - pulumi stack select $PULUMI_STACK
+  - pulumi config set kubernetes:context "$KUBE_CONTEXT"
 
 stages:
   - linting
