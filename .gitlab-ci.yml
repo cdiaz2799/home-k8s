@@ -5,6 +5,7 @@ include:
   - template: Security/Dependency-Scanning.gitlab-ci.yml
 
 variables:
+  KUBE_CONTEXT: homelab-infrastructure/home-k8s:cdubnt1
   VENV_PATH: /pulumi/projects/venv
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   PULUMI_STACK: "prod"
@@ -14,6 +15,7 @@ cache:
     - $HOME/.pulumi/bin
     - $VENV_PATH
 before_script:
+  - kubectl config use-context "$KUBE_CONTEXT"
   - source $VENV_PATH/bin/activate
   - $VENV_PATH/bin/pip install --no-color --upgrade -q -r requirements.txt
   - pulumi login
