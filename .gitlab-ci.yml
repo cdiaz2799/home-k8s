@@ -15,6 +15,8 @@ cache:
     - $HOME/.pulumi/bin
     - $VENV_PATH
 before_script:
+  - kubectl config get-clusters
+  - kubectl config get-users
   - kubectl config use-context "$KUBE_CONTEXT"
   - source $VENV_PATH/bin/activate
   - $VENV_PATH/bin/pip install --no-color --upgrade -q -r requirements.txt
