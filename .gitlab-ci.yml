@@ -8,14 +8,11 @@ default:
   tags:
     - homelab
   before_script:
-    - kubectl config set-credentials agent:$AGENT_ID --token="ci:${AGENT_ID}:${CI_JOB_TOKEN}"
-    - kubectl config set-context "$KUBE_CONTEXT" --cluster=gitlab --user="agent:${AGENT_ID}"
     - kubectl config use-context "$KUBE_CONTEXT"
     - source $VENV_PATH/bin/activate
     - $VENV_PATH/bin/pip install --no-color --upgrade -q -r requirements.txt
     - pulumi login
     - pulumi stack select $PULUMI_STACK
-    - pulumi config set kubernetes:context "$KUBE_CONTEXT"
 
 include:
   - template: Security/Secret-Detection.gitlab-ci.yml
@@ -37,7 +34,9 @@ stages:
 
 blue:
   stage: linting
-  before_script: []
+  before_script:
+    - source $VENV_PATH/bin/activate
+    - $VENV_PATH/bin/pip install --no-color --upgrade blue
   script:
     - blue --check -- .
   only:
@@ -60,7 +59,7 @@ preview:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_OPEN_MERGE_REQUESTS
       when: never
-    - if: $CI_COMMIT_BRANCH
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 build:
   stage: build
