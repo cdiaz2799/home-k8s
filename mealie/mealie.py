@@ -52,7 +52,7 @@ deployment = kubernetes.apps.v1.Deployment(
                         volume_mounts=[
                             kubernetes.core.v1.VolumeMountArgs(
                                 name=volume_name,
-                                mount_path='app/data',
+                                mount_path='/app/data',
                             ),
                         ],
                         env_from=[
