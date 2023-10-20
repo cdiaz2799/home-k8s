@@ -5,23 +5,23 @@ config:
   home-k8s:cloudflare-tunnel-id:
     secure: AAABACNvjElLRA8tn2yVdQaYAgKlb4ug/H2lpKlADS4UgN+uWDJFXL1aNohN56wvibHK7+zQebSJQbnl65UXxHfZIGM=
   home-k8s:timezone: America/Phoenix
-  mealie:allow-signup: "false"
+  mealie:allow-signup: "True"
   mealie:mealie-db-name: mealie
   mealie:mealie-db-pw:
-    secure: AAABANp8dM2PJ3PMc7VZeoIK24+mU0t38IBwBl1f9m4t7FPB+pxxRYtxCE64lyRVMexQzA==
-  mealie:mealie-db-user: mealie-db-user
+    secure: AAABAJKlkU75obdl4k8FgLSV0OTRxLYerLBNFsmYbbcczU63b1BTDRakKCPL8T9gxaM=
+  mealie:mealie-db-user: mealie
   mealie:mealie-fqdn: mealie.cdiaz.cloud
   mealie:smtp-auth-strategy: TLS
-  mealie:smtp-from-email: mealie@cdiaz.cloud
+  mealie:smtp-from-email: noreply@cdiaz.cloud
   mealie:smtp-from-name: Mealie
   mealie:smtp-host:
     secure: AAABANf27SBAjDO1Xe4BOeMXUY50pSDi764jWomd3DWm4P8wXBlegsw/wEC04d9FndI=
   mealie:smtp-password:
-    secure: AAABAEghKVS2Uxux2HcXsh+U1LBqU9PnbQTcdHINNw/+gKfJ07+R5GFVPuWej9Tk
+    secure: AAABAAZChljxX3rVdzPk6aXHD2g9qosHg6VulUardosnEVAgapvaVlxES1+eQ0XJ
   mealie:smtp-port:
     secure: AAABAPdrWSbtf7JUI5SE/gApYXb2UDfkz0k2OEEyGtQSyCg=
   mealie:smtp-user:
-    secure: AAABAFG6eiPfGS2XCfEMiPhvIOOA8qHyn9SMNRUXkub/RCemKPU07SraJd8Fwy9AGPudJVw=
+    secure: AAABAEjvnoKlW2ZqsJcu/lcqQRnx4KuW22vQCuUq8TO+VK3ikJwrDX/TIcHprZ8t+oUz
   paperless:paperless-admin-email:
     secure: AAABANAKPOm3EfbDtoPABbP6cqqZXxn4TqLvhfxCkDJTCKAXGdFoDecJW3JYXyLpPi+I/Ao=
   paperless:paperless-admin-password:

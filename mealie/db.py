@@ -35,7 +35,7 @@ db_deployment = apps.v1.Deployment(
             'spec': {
                 'containers': [
                     {
-                        'name': component_name,
+                        'name': f'{app_name}-{component_name}',
                         'image': 'postgres:15',
                         'ports': [{'containerPort': 5432, 'name': 'postgres'}],
                         'envFrom': [
@@ -64,7 +64,7 @@ db_deployment = apps.v1.Deployment(
             },
         },
     },
-    opts=pulumi.ResourceOptions(delete_before_replace=True),
+    opts=pulumi.ResourceOptions(delete_before_replace=True, depends_on=db_pvc),
 )
 
 # Setup Service
@@ -85,5 +85,7 @@ db_service = core.v1.Service(
             )
         ],
     ),
-    opts=pulumi.ResourceOptions(delete_before_replace=True),
+    opts=pulumi.ResourceOptions(
+        delete_before_replace=True, depends_on=db_deployment
+    ),
 )
