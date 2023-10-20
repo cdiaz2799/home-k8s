@@ -24,6 +24,7 @@ deployment = kubernetes.apps.v1.Deployment(
     metadata=kubernetes.meta.v1.ObjectMetaArgs(
         name=app_name,
         namespace=namespace_name,
+        labels=labels,
     ),
     spec=kubernetes.apps.v1.DeploymentSpecArgs(
         replicas=1,

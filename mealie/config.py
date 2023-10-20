@@ -20,7 +20,7 @@ namespace_name = namespace.namespace.metadata['name']
 # Retrieve values from Pulumi Config
 default_group = config.get('default-group', default='Home')
 default_email = config.get('default-email', default='changeme@example.com')
-base_url = f'http://{app_url}'
+base_url = f'https://{app_url}'
 token_time = config.get('token-time', default='48')
 api_docs = config.get('api-docs', default='True')
 allow_signup = config.get('allow-signup', default='true')
@@ -33,7 +33,7 @@ security_user_lockout_time = config.get(
 )
 # Backend Configuration - Database
 db_engine = config.get('db-engine', default='postgres')
-postgres_server = config.get('postgres-server', default='postgres')
+postgres_server = config.get('postgres-server', default='db')
 postgres_port = config.get('postgres-port', default='5432')
 # Backend Configuration - Webworker
 web_gunicorn = config.get('web-gunicorn', default='false')
