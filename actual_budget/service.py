@@ -1,4 +1,5 @@
 import pulumi_kubernetes as kubernetes
+from pulumi import ResourceOptions
 
 import actual_budget
 import actual_budget.pvc as pvc
@@ -30,4 +31,5 @@ service = kubernetes.core.v1.Service(
         ],
         selector=app_label,
     ),
+    opts=ResourceOptions(parent=actual_budget.namespace, delete_before_replace=True),
 )

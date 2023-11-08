@@ -14,6 +14,7 @@ actual_pvc = pvc.K8sPVC(
     namespace=namespace,
     app_label=actual_budget.app_label,
     volume_size=volume_size,
+    opts=pulumi.ResourceOptions(parent=actual_budget.namespace, delete_before_replace=True),
 )
 
 # Output
