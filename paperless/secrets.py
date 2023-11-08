@@ -2,10 +2,15 @@ import pulumi
 import pulumi_kubernetes
 
 import modules.secrets as secrets
-from paperless.config import app_label, app_name, config, namespace_name
+from paperless.config import (
+    app_label,
+    app_name,
+    config,
+    namespace_name,
+    namespace,
+)
 
 # Setup Vars
-namespace = namespace_name
 db_name = config.get('paperless-db-name', default='paperless')
 db_user = config.get('paperless-db-user', default='paperless')
 db_pw = config.require_secret('paperless-db-pw')
@@ -25,6 +30,7 @@ db_creds = secrets.K8sSecret(
         'POSTGRES_USER': db_user,
         'POSTGRES_PASSWORD': db_pw,
     },
+    opts=pulumi.ResourceOptions(parent=namespace, delete_before_replace=True),
 )
 
 paperless_db = secrets.K8sSecret(
@@ -39,6 +45,7 @@ paperless_db = secrets.K8sSecret(
         'PAPERLESS_DBUSER': db_user,
         'PAPERLESS_DBPASS': db_pw,
     },
+    opts=pulumi.ResourceOptions(parent=namespace, delete_before_replace=True),
 )
 
 paperless_secrets = secrets.K8sSecret(
@@ -51,4 +58,5 @@ paperless_secrets = secrets.K8sSecret(
         'PAPERLESS_ADMIN_MAIL': paperless_mail,
         'PAPERLESS_ADMIN_PASSWORD': paperless_pw,
     },
+    opts=pulumi.ResourceOptions(parent=namespace, delete_before_replace=True),
 )

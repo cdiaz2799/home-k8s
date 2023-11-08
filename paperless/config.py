@@ -36,4 +36,5 @@ paperless_config_map = kubernetes.core.v1.ConfigMap(
         'PAPERLESS_OCR_LANGUAGE': 'eng',
         'PAPERLESS_REDIS': 'redis://broker:6379',
     },
+    opts=pulumi.ResourceOptions(parent=namespace, delete_before_replace=True),
 )

@@ -1,29 +1,30 @@
+import pulumi
 from pulumi_kubernetes import apps, core
 
 import modules.pvc as pvc
-from paperless.config import app_label, app_name, namespace_name
+from paperless.config import app_label, app_name, namespace_name, namespace
 from paperless.secrets import db_creds as secret
 
 # Setup Vars
-namespace = namespace_name
 component_name = 'db'
 component_label = {'component': component_name}
 tier_label = {'tier': 'backend'}
 app_labels = {**app_label, **component_label, **tier_label}
-volume_name = 'pg-data'
+volume_name = f'{app_name}-{component_name}-pvc'
 
 db_pvc = pvc.K8sPVC(
-    f'{app_name}-{component_name}-pvc',
-    namespace=namespace,
+    volume_name,
+    namespace=namespace_name,
     app_label=app_label,
     volume_size='5Gi',
+    opts=pulumi.ResourceOptions(parent=namespace, delete_before_replace=True),
 )
 
 db_deployment = apps.v1.Deployment(
     f'{app_name}-{component_name}-deployment',
     metadata={
         'name': component_name,
-        'namespace': namespace,
+        'namespace': namespace_name,
         'labels': app_labels,
     },
     spec={
@@ -62,13 +63,14 @@ db_deployment = apps.v1.Deployment(
             },
         },
     },
+    opts=pulumi.ResourceOptions(parent=namespace, delete_before_replace=True),
 )
 
 db_service = core.v1.Service(
     f'{app_name}-{component_name}-service',
     metadata={
         'name': component_name,
-        'namespace': namespace,
+        'namespace': namespace_name,
         'labels': app_labels,
     },
     spec=core.v1.ServiceSpecArgs(
@@ -80,5 +82,8 @@ db_service = core.v1.Service(
                 target_port=5432,
             )
         ],
+    ),
+    opts=pulumi.ResourceOptions(
+        parent=db_deployment, delete_before_replace=True
     ),
 )

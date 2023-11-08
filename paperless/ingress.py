@@ -45,4 +45,7 @@ ingress = kubernetes.networking.v1.Ingress(
             )
         ],
     ),
+    opts=pulumi.ResourceOptions(
+        parent=config.namespace, delete_before_replace=True
+    ),
 )

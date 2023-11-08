@@ -15,20 +15,24 @@ component_label = {'component': component_name}
 tier_label = {'tier': 'frontend'}
 app_labels = {**app_label, **component_label, **tier_label}
 app_version = paperless_config.get('paperless-version', default='latest')
+data_volume = f'{app_name}-data-pvc'
+media_volume = f'{app_name}-media-pvc'
 
 # Setup PVCs
 data_pvc = pvc.K8sPVC(
-    f'{app_name}-data-pvc',
+    data_volume,
     namespace=namespace,
     app_label=app_label,
     volume_size='1Gi',
+    opts=pulumi.ResourceOptions(parent=config.namespace),
 )
 
 media_pvc = pvc.K8sPVC(
-    f'{app_name}-media-pvc',
+    media_volume,
     namespace=namespace,
     app_label=app_label,
     volume_size='1Gi',
+    opts=pulumi.ResourceOptions(parent=config.namespace),
 )
 
 # Setup Deployment
@@ -122,6 +126,7 @@ paperless_deployment = k8s.apps.v1.Deployment(
             ),
         ),
     ),
+    opts=pulumi.ResourceOptions(parent=config.namespace),
 )
 
 service = k8s.core.v1.Service(
@@ -141,4 +146,5 @@ service = k8s.core.v1.Service(
             )
         ],
     ),
+    opts=pulumi.ResourceOptions(parent=paperless_deployment),
 )

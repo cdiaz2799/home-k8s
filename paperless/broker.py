@@ -2,7 +2,7 @@ import pulumi
 from pulumi_kubernetes import apps, core
 
 import modules.pvc as pvc
-from paperless.config import app_label, app_name, namespace_name
+from paperless.config import app_label, app_name, namespace, namespace_name
 
 # Setup Vars
 component_name = 'broker'
@@ -17,6 +17,7 @@ redis_pvc = pvc.K8sPVC(
     namespace=namespace_name,
     app_label=app_label,
     volume_size='5Gi',
+    opts=pulumi.ResourceOptions(parent=namespace, delete_before_replace=True),
 )
 
 # Setup Deployment
@@ -53,6 +54,7 @@ broker_deployment = apps.v1.Deployment(
             },
         },
     },
+    opts=pulumi.ResourceOptions(parent=namespace, delete_before_replace=True),
 )
 
 broker_service = core.v1.Service(
@@ -72,4 +74,5 @@ broker_service = core.v1.Service(
             )
         ],
     ),
+    opts=pulumi.ResourceOptions(parent=namespace, delete_before_replace=True),
 )
