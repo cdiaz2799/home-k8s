@@ -1,6 +1,7 @@
+import pulumi
 import pulumi_kubernetes as kubernetes
 
-from mealie import mealie, config
+from mealie import config, mealie
 
 # Setup Vars
 app_name = config.app_name
@@ -43,4 +44,5 @@ ingress = kubernetes.networking.v1.Ingress(
             )
         ],
     ),
+    opts=pulumi.ResourceOptions(parent=mealie.namespace),
 )

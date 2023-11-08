@@ -31,5 +31,7 @@ service = kubernetes.core.v1.Service(
         ],
         selector=app_label,
     ),
-    opts=ResourceOptions(parent=actual_budget.namespace, delete_before_replace=True),
+    opts=ResourceOptions(
+        parent=actual_budget.namespace, delete_before_replace=True
+    ),
 )

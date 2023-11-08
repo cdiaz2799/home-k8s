@@ -1,11 +1,13 @@
 import pulumi_kubernetes as kubernetes
+from pulumi import ResourceOptions
 
 from mealie.config import (
     app_label,
     app_name,
-    namespace_name,
     config,
     config_map,
+    namespace,
+    namespace_name,
 )
 from mealie.secrets import db_creds, smtp
 
@@ -86,6 +88,7 @@ deployment = kubernetes.apps.v1.Deployment(
             ),
         ),
     ),
+    opts=ResourceOptions(parent=namespace, delete_before_replace=True),
 )
 
 service = kubernetes.core.v1.Service(
@@ -108,4 +111,5 @@ service = kubernetes.core.v1.Service(
         ],
         type='NodePort',
     ),
+    opts=ResourceOptions(parent=deployment, delete_before_replace=True),
 )

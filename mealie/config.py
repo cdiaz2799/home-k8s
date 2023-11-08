@@ -71,4 +71,5 @@ config_map = kubernetes.core.v1.ConfigMap(
         'MAX_WORKERS': max_workers,  # Set the maximum number of workers to use. Default is not set meaning unlimited.
         'WEB_CONCURRENCY': web_concurrency,  # Override the automatic definition of the number of workers.
     },
+    opts=pulumi.ResourceOptions(parent=namespace, delete_before_replace=True),
 )

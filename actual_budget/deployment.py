@@ -72,5 +72,7 @@ deployment = kubernetes.apps.v1.Deployment(
             ),
         ),
     ),
-    opts=pulumi.ResourceOptions(parent=actual_budget.namespace, delete_before_replace=True),
+    opts=pulumi.ResourceOptions(
+        parent=actual_budget.namespace, delete_before_replace=True
+    ),
 )

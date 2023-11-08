@@ -1,4 +1,8 @@
-from mealie.config import app_label, app_name, config, namespace_name
+from pulumi import ResourceOptions
+
+from mealie.config import app_label, app_name, config
+from mealie.config import namespace as mealie_namespace
+from mealie.config import namespace_name
 from modules import secrets
 
 # Setup Vars
@@ -25,6 +29,7 @@ db_creds = secrets.K8sSecret(
         'POSTGRES_USER': db_user,
         'POSTGRES_PASSWORD': db_pw,
     },
+    opts=ResourceOptions(parent=mealie_namespace, delete_before_replace=True),
 )
 
 smtp = secrets.K8sSecret(
@@ -40,4 +45,5 @@ smtp = secrets.K8sSecret(
         'SMTP_USER': smtp_user,  # Required if SMTP_AUTH_STRATEGY is 'TLS' or 'SSL'
         'SMTP_PASSWORD': smtp_password,  # Required if SMTP_AUTH_STRATEGY is 'TLS' or 'SSL'
     },
+    opts=ResourceOptions(parent=mealie_namespace, delete_before_replace=True),
 )
