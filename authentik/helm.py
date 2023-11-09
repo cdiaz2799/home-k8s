@@ -1,6 +1,9 @@
 import pulumi
+import pulumi_kubernetes.core.v1 as k8s
 import pulumi_kubernetes.helm.v3 as helm
+import pulumi_kubernetes.meta.v1 as meta
 import pulumi_random as random
+
 import modules.namespace as k8snamespace
 
 # Setup Config
@@ -16,7 +19,21 @@ namespace = k8snamespace.K8Namespace(
     name='authentik',
 )
 
-# Deploy Authentik
+# Setup Authentik
+
+## Setup Config Map
+config_map = k8s.ConfigMap(
+    'authentik-user-settings',
+    metadata=meta.ObjectMetaArgs(
+        name='user-settings',
+        namespace=namespace.namespace.metadata['name'],
+    ),
+    data={
+        'user_settings.py': f'CSRF_TRUSTED_ORIGINS = ["https://{ingress_domain}"]',
+    },
+)
+
+## Generate Random Password for Database
 db_pw = random.RandomPassword(
     'authentik-db-pw',
     length=16,
@@ -24,6 +41,8 @@ db_pw = random.RandomPassword(
     override_special='_%@',
     opts=pulumi.ResourceOptions(parent=namespace),
 )
+
+## Deploy from Helm Chart
 chart = helm.Chart(
     'authentik',
     helm.ChartOpts(
@@ -47,6 +66,7 @@ chart = helm.Chart(
                 'tag': app_version,
             },
             'ingress': {
+                'annotation': {},
                 'ingressClassName': 'nginx',
                 'enabled': 'true',
                 'hosts': [
@@ -63,6 +83,21 @@ chart = helm.Chart(
             'redis': {
                 'enabled': 'true',
             },
+            'volumes': [
+                {
+                    'name': 'user-settings',
+                    'configMap': {
+                        'name': config_map.metadata['name'],
+                    },
+                },
+            ],
+            'volumeMounts': [
+                {
+                    'name': 'user-settings',
+                    'mountPath': '/data',
+                    'readOnly': True,
+                }
+            ],
         },
     ),
     opts=pulumi.ResourceOptions(parent=namespace),
