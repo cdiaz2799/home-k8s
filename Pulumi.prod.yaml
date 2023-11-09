@@ -1,5 +1,13 @@
 config:
   actual:actual-hostname: actual.cdiaz.cloud
+  authentik:ingress-domain: authentik.cdiaz.cloud
+  authentik:secret-key:
+    secure: AAABAG87+Kmyp9jSKRl2Zwa9IYLvqK6QARpe66lqGrIJSg4iclwLtwJWCdLBQlAeo64ovsMtE1IJ7auSnM7nZCiI4LkUQLMiGoxs3vI1E1M=
+  cf:account_id:
+    secure: AAABAMx+5MCGVRs71zfj/FOLLATmsdviwdD8lbnrc+hy242yvuU6wpHOKDiltzbyC+tNhDSuIq1tfVYNZS6/1g==
+  cf:tunnel-name: cdubnt1
+  cloudflare:apiToken:
+    secure: AAABAEov9hn31Avde6YvbyE8kqChgghSREVZYn0dEDKyZoqxFvVJlE9RqL0j1HwkpDgQvw+pSyLnnlECVtamdDIPiap2TLHh
   home-k8s:cloudflare-account-id:
     secure: AAABANjlqNWmfm/LEU3KrWVXJCAwyTOQQkpwe6KhX46KHa/abxNlB5p3IlMMPEy8wGcogJFcml9QFJBeIdjFKw==
   home-k8s:cloudflare-tunnel-id:
