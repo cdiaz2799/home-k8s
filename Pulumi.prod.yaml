@@ -38,6 +38,20 @@ config:
   paperless:paperless-fqdn: paperless.cdiaz.cloud
   paperless:paperless-secret-key:
     secure: AAABAKEUSRWZEjT632Zftu9IyYNrBva+JkmeKwcCTneY/B+jCrWZBKiN+vGZ3NHI6st94J5FhxLHR3UTghWI5yW9mYDEQpTH3V+dvEKCsOMD6d50GESkmy3TMy20XZy4
+  plane:default-email:
+    secure: AAABAKYykP9umNflnoWoS5CIs81ipyq6hqNYAJXhOGyCvVGc/5EcXfmMYeNmgLNtjwE2AhA=
+  plane:default-password:
+    secure: AAABAOxlLySffUqdFNWM6Enx7/jgi3Xdj+JJ2bWH6N7bKFcC8HHAC+OaZNy1yojiH/2N
+  plane:fqdn: plane.cdiaz.cloud
+  plane:openai-key:
+    secure: AAABAMVsHNFghixLpOzpdq1VSBuzyyACLyDT/O0fG7dZdWedaZzGoRuOSPpH365/qeTpLckWQPovtLhc8oli6TPQPTu9DBBkxNkYx1s7vGA45Kk=
+  plane:r2-access-key-id:
+    secure: AAABANF1b9qrd8jPQLcHCu5odkgIKCXI1upmvIO1OAHR256HbvJrbPzHexBB0iMRJqjLiER9Kw45Erc1+twEgg==
+  plane:r2-bucket-region: wnam
+  plane:r2-secret-access-key:
+    secure: AAABAP4a2m+Xc9NM3oW9TF/hodhLlrG/vvzC5gHeyFKgL+gJUJLbVRIFMwe833S1TR7lVvmNUq2X3Qu9mCXk79ze93Jmw6c7U4b51PLVfOVOyu2KHlCbTCNVvJsimYKP
+  plane:secret-key:
+    secure: AAABACTnlkcp78jgjt5h3F+m05yWNTDKrt56DliMk47EKV/R+jJxG5dvnIZ0dABs9HgKbh+phJqKurNioI2XnwWa/itV/JKIL0nF6bC6MGJYMQ==
   tandoor:hostname: tandoor.cdiaz.cloud
   tandoor:ingress-host: recipes.cdiaz.cloud
   tandoor:postgres-pw:
