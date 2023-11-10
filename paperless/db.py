@@ -16,7 +16,7 @@ db_pvc = pvc.K8sPVC(
     volume_name,
     namespace=namespace_name,
     app_label=app_label,
-    volume_size='5Gi',
+    volume_size='1Gi',
     opts=pulumi.ResourceOptions(parent=namespace, delete_before_replace=True),
 )
 
