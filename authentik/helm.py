@@ -12,7 +12,7 @@ config = pulumi.Config('authentik')
 # Setup Vars
 secret_key = config.require_secret('secret-key')
 ingress_domain = config.require('ingress-domain')
-app_version = config.get('app-version', default='2023.10.2')
+app_version = config.get('app-version', default='2023.10.3')
 
 # Setup Namespace
 namespace = k8snamespace.K8Namespace(
@@ -31,6 +31,7 @@ config_map = k8s.ConfigMap(
     data={
         'user_settings.py': f'CSRF_TRUSTED_ORIGINS = ["https://{ingress_domain}"]',
     },
+    opts=pulumi.ResourceOptions(parent=namespace),
 )
 
 ## Generate Random Password for Database
