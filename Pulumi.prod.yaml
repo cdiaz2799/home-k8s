@@ -5,6 +5,10 @@ config:
     secure: AAABAG87+Kmyp9jSKRl2Zwa9IYLvqK6QARpe66lqGrIJSg4iclwLtwJWCdLBQlAeo64ovsMtE1IJ7auSnM7nZCiI4LkUQLMiGoxs3vI1E1M=
   cloudflare:apiToken:
     secure: AAABAEov9hn31Avde6YvbyE8kqChgghSREVZYn0dEDKyZoqxFvVJlE9RqL0j1HwkpDgQvw+pSyLnnlECVtamdDIPiap2TLHh
+  datadog:api-key:
+    secure: AAABANLNNGKdQN6SFs4GpkTJEr5T1W/SOeHSwzhN9+0iqVt+k0HteWLT2ASpN0NI7f7pgeXkxbz6m3ES3tA3SQ==
+  datadog:app-key:
+    secure: AAABAEJiRGNPdGXTeHG06le1c6PkucLBzyNX7euRUfBR59nfc5jyeYwKgQfbRhI/0XcP5imezK8UYYF3mqnrQ70wDlrgsxlD
   home-k8s:cloudflare-account-id:
     secure: AAABANjlqNWmfm/LEU3KrWVXJCAwyTOQQkpwe6KhX46KHa/abxNlB5p3IlMMPEy8wGcogJFcml9QFJBeIdjFKw==
   home-k8s:cloudflare-tunnel-id:
@@ -45,6 +49,7 @@ config:
   plane:fqdn: plane.cdiaz.cloud
   plane:openai-key:
     secure: AAABAMVsHNFghixLpOzpdq1VSBuzyyACLyDT/O0fG7dZdWedaZzGoRuOSPpH365/qeTpLckWQPovtLhc8oli6TPQPTu9DBBkxNkYx1s7vGA45Kk=
+  plane:plane-version: v0.13.2-dev
   plane:r2-access-key-id:
     secure: AAABANF1b9qrd8jPQLcHCu5odkgIKCXI1upmvIO1OAHR256HbvJrbPzHexBB0iMRJqjLiER9Kw45Erc1+twEgg==
   plane:r2-bucket-region: wnam
@@ -52,6 +57,15 @@ config:
     secure: AAABAP4a2m+Xc9NM3oW9TF/hodhLlrG/vvzC5gHeyFKgL+gJUJLbVRIFMwe833S1TR7lVvmNUq2X3Qu9mCXk79ze93Jmw6c7U4b51PLVfOVOyu2KHlCbTCNVvJsimYKP
   plane:secret-key:
     secure: AAABACTnlkcp78jgjt5h3F+m05yWNTDKrt56DliMk47EKV/R+jJxG5dvnIZ0dABs9HgKbh+phJqKurNioI2XnwWa/itV/JKIL0nF6bC6MGJYMQ==
+  plane:smtp-from:
+    secure: AAABAGplqtu4yTkhMmZSLc4vcezlaG3SMNrdb20yVOQfkSyT6c19lFENO9aCDkx3a4Vh
+  plane:smtp-host:
+    secure: AAABAJR7QFPLE3Q4g8rzXXFrCXEyp9sn3zMhnX6t+D8JfsGrhShF0MV7kw2MojAnU9c=
+  plane:smtp-password:
+    secure: AAABAGC/XwT2DBWCHVUFaGpaxZLeK49UvR3CRyQl75wsfOQpaWsGYBQGbrojhfqn
+  plane:smtp-port: "587"
+  plane:smtp-user:
+    secure: AAABAHRM+7T8Q0qOBQZPmwPqwoPxW1BuW5I4QxcwyF4Nx2gdMlWRqxkCgCclyDt9x16n
   tandoor:hostname: tandoor.cdiaz.cloud
   tandoor:ingress-host: recipes.cdiaz.cloud
   tandoor:postgres-pw:
