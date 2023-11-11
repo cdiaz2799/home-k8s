@@ -1,0 +1,5 @@
+{
+  "black-formatter.path": ["venv/bin/blue"],
+  "black-formatter.interpreter": ["venv/bin/python"],
+  "editor.formatOnSave": true
+}
