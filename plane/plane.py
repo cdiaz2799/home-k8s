@@ -1,7 +1,6 @@
 import pulumi
-from pulumi_kubernetes import apps, core
+from pulumi_kubernetes import apps, core, meta
 
-import modules.pvc as pvc
 from plane.config import (
     api_config_map,
     app_label,
@@ -14,37 +13,118 @@ from plane.config import (
 )
 from plane.db import db_deployment
 from plane.redis import redis_deployment
-from plane.secrets import postgres_creds
+from plane.secrets import (
+    db_creds,
+    default_creds,
+    openai_secret,
+    smtp_creds,
+)
 
 # Deploy API
 api_component = 'api'
 api_label = {'component': api_component}
 api_labels = {**app_label, **api_label}
+bw_component = 'beat-worker'
+worker_component = 'worker'
+space_component = 'space'
 
-api_deployment = apps.v1.Deployment(
-    f'{app_name}-api-deployment',
+api_env = [
+    core.v1.EnvFromSourceArgs(
+        config_map_ref=core.v1.ConfigMapEnvSourceArgs(
+            name=api_config_map.metadata['name']
+        ),
+    ),
+    core.v1.EnvFromSourceArgs(
+        secret_ref=core.v1.SecretEnvSourceArgs(
+            name=db_creds.secret.metadata['name']
+        )
+    ),
+    core.v1.EnvFromSourceArgs(
+        secret_ref=core.v1.SecretEnvSourceArgs(
+            name=smtp_creds.secret.metadata['name']
+        )
+    ),
+    core.v1.EnvFromSourceArgs(
+        secret_ref=core.v1.SecretEnvSourceArgs(
+            name=openai_secret.secret.metadata['name']
+        )
+    ),
+    core.v1.EnvFromSourceArgs(
+        secret_ref=core.v1.SecretEnvSourceArgs(
+            name=default_creds.secret.metadata['name']
+        )
+    ),
+]
+
+backend_deployment = apps.v1.Deployment(
+    f'{app_name}-backend-deployment',
     api_version='apps/v1',
     kind='Deployment',
-    metadata=core.v1.ObjectMeta(
-        labels=api_labels, name=app_name, namespace=namespace_name
+    metadata=meta.v1.ObjectMetaArgs(
+        labels=api_labels, name=f'{app_name}-backend', namespace=namespace_name
     ),
     spec=apps.v1.DeploymentSpecArgs(
         replicas=1,
-        selector=core.v1.LabelSelectorArgs(match_labels=api_labels),
+        selector=meta.v1.LabelSelectorArgs(match_labels=api_labels),
         template=core.v1.PodTemplateSpecArgs(
-            metadata=core.v1.ObjectMetaArgs(labels=api_labels),
+            metadata=meta.v1.ObjectMetaArgs(labels=api_labels),
             spec=core.v1.PodSpecArgs(
                 containers=[
                     core.v1.ContainerArgs(
                         name=api_component,
                         image=f'makeplane/plane-backend:{app_version}',
-                        restart_policy='Always',
+                        image_pull_policy='IfNotPresent',
                         command=['./bin/takeoff'],
-                        env_from=core.v1.EnvFromSourceArgs(
-                            config_map_ref=core.v1.ConfigMapEnvSourceArgs(
-                                name=api_config_map.metadata['name']
+                        env_from=api_env,
+                        ports=[
+                            core.v1.ContainerPortArgs(
+                                container_port=8000,
+                                name='http',
+                                protocol='TCP',
                             )
-                        ),
+                        ],
+                    ),
+                    core.v1.ContainerArgs(
+                        name=bw_component,
+                        image=f'makeplane/plane-backend:{app_version}',
+                        image_pull_policy='IfNotPresent',
+                        command=[
+                            './bin/beat',
+                        ],
+                        env_from=api_env,
+                    ),
+                    core.v1.ContainerArgs(
+                        name=worker_component,
+                        image=f'makeplane/plane-backend:{app_version}',
+                        image_pull_policy='IfNotPresent',
+                        command=[
+                            './bin/worker',
+                        ],
+                        env_from=api_env,
+                    ),
+                    core.v1.ContainerArgs(
+                        name=space_component,
+                        image=f'makeplane/plane-space:{app_version}',
+                        image_pull_policy='IfNotPresent',
+                        command=[
+                            '/usr/local/bin/start.sh',
+                        ],
+                        args=['space/server.js', 'space'],
+                        env_from=[
+                            core.v1.EnvFromSourceArgs(
+                                config_map_ref=core.v1.ConfigMapEnvSourceArgs(
+                                    name=space_config_map.metadata['name']
+                                )
+                            )
+                        ],
+                        ports=[
+                            core.v1.ContainerPortArgs(
+                                container_port=3000,
+                                host_port=3001,
+                                name='http',
+                                protocol='TCP',
+                            )
+                        ],
                     ),
                 ],
             ),
@@ -57,175 +137,132 @@ api_deployment = apps.v1.Deployment(
     ),
 )
 
-
-# Deploy Beat Worker
-bw_component = 'beat-worker'
-bw_label = {'component': bw_component}
-bw_app_labels = {**app_label, **bw_label}
-
-beat_worker_deployment = apps.v1.Deployment(
-    f'{app_name}-beat-worker-deployment',
-    api_version='apps/v1',
-    kind='Deployment',
-    metadata=core.v1.ObjectMeta(
-        labels=bw_app_labels, name=app_name, namespace=namespace_name
-    ),
-    spec=apps.v1.DeploymentSpecArgs(
-        replicas=1,
-        selector=core.v1.LabelSelectorArgs(match_labels=bw_app_labels),
-        template=core.v1.PodTemplateSpecArgs(
-            metadata=core.v1.ObjectMetaArgs(labels=bw_app_labels),
-            spec=core.v1.PodSpecArgs(
-                containers=[
-                    core.v1.ContainerArgs(
-                        name=bw_component,
-                        image=f'makeplane/plane-backend:{app_version}',
-                        command=[
-                            './bin/beat',
-                        ],
-                        env_from=core.v1.EnvFromSourceArgs(
-                            config_map_ref=core.v1.ConfigMapEnvSourceArgs(
-                                name=api_config_map.metadata['name']
-                            )
-                        ),
-                        restart_policy='Always',
-                    ),
-                ],
-            ),
-        ),
-    ),
-    opts=pulumi.ResourceOptions(
-        parent=namespace,
-        delete_before_replace=True,
-        depends_on=[api_deployment, db_deployment, redis_deployment],
-    ),
-)
-
-# Deploy Worker
-worker_component = 'worker'
-worker_label = {'component': worker_component}
-worker_labels = {**app_label, **worker_label}
-
-worker_deployment = apps.v1.Deployment(
-    f'{app_name}-worker-deployment',
-    api_version='apps/v1',
-    kind='Deployment',
-    metadata=core.v1.ObjectMeta(
-        labels=worker_labels, name=app_name, namespace=namespace_name
-    ),
-    spec=apps.v1.DeploymentSpecArgs(
-        replicas=1,
-        selector=core.v1.LabelSelectorArgs(match_labels=worker_labels),
-        template=core.v1.PodTemplateSpecArgs(
-            metadata=core.v1.ObjectMetaArgs(labels=worker_labels),
-            spec=core.v1.PodSpecArgs(
-                containers=[
-                    core.v1.ContainerArgs(
-                        name=worker_component,
-                        restart_policy='Always',
-                        image=f'makeplane/plane-backend:{app_version}',
-                        command=[
-                            './bin/worker',
-                        ],
-                        env_from=core.v1.EnvFromSourceArgs(
-                            config_map_ref=core.v1.ConfigMapEnvSourceArgs(
-                                name=api_config_map.metadata['name']
-                            )
-                        ),
-                    ),
-                ],
-            ),
-        ),
-    ),
-    opts=pulumi.ResourceOptions(
-        parent=namespace,
-        delete_before_replace=True,
-        depends_on=[api_deployment, db_deployment, redis_deployment],
-    ),
-)
 # Deploy Frontend
-web_component = 'web'
-web_label = {'component': web_component}
-web_labels = {**app_label, **web_label}
+frontend_component = 'frontend'
+frontend_label = {'component': frontend_component}
+frontend_labels = {**app_label, **frontend_label}
 
-web_deployment = (
-    apps.v1.Deployment(
-        f'{app_name}-web-deployment',
-        api_version='apps/v1',
-        kind='Deployment',
-        metadata=core.v1.ObjectMeta(
-            labels=web_labels, name=app_name, namespace=namespace_name
-        ),
-        spec=apps.v1.DeploymentSpecArgs(
-            replicas=1,
-            selector=core.v1.LabelSelectorArgs(match_labels=web_labels),
-            template=core.v1.PodTemplateSpecArgs(
-                metadata=core.v1.ObjectMetaArgs(labels=web_labels),
-                spec=core.v1.PodSpecArgs(
-                    containers=[
-                        core.v1.ContainerArgs(
-                            name=web_component,
-                            image=f'makeplane/plane-frontend:{app_version}',
-                            restart_policy='Always',
-                            command=[
-                                '/usr/local/bin/start.sh web/server.js web'
-                            ],
-                            env_from=core.v1.EnvFromSourceArgs(
+frontend_deployment = apps.v1.Deployment(
+    f'{app_name}-frontend-deployment',
+    api_version='apps/v1',
+    kind='Deployment',
+    metadata=meta.v1.ObjectMetaArgs(
+        labels=frontend_labels,
+        name=f'{app_name}-frontend',
+        namespace=namespace_name,
+    ),
+    spec=apps.v1.DeploymentSpecArgs(
+        replicas=1,
+        selector=meta.v1.LabelSelectorArgs(match_labels=frontend_labels),
+        template=core.v1.PodTemplateSpecArgs(
+            metadata=meta.v1.ObjectMetaArgs(labels=frontend_labels),
+            spec=core.v1.PodSpecArgs(
+                containers=[
+                    core.v1.ContainerArgs(
+                        name=frontend_component,
+                        image=f'makeplane/plane-frontend:{app_version}',
+                        image_pull_policy='IfNotPresent',
+                        command=[
+                            '/usr/local/bin/start.sh',
+                        ],
+                        args=['web/server.js', 'web'],
+                        env_from=[
+                            core.v1.EnvFromSourceArgs(
                                 config_map_ref=core.v1.ConfigMapEnvSourceArgs(
                                     name=web_config_map.metadata['name']
                                 )
-                            ),
-                        ),
-                    ],
-                ),
+                            )
+                        ],
+                        ports=[
+                            core.v1.ContainerPortArgs(
+                                container_port=3000,
+                                name='http',
+                                protocol='TCP',
+                            )
+                        ],
+                    ),
+                ],
             ),
         ),
-        opts=pulumi.ResourceOptions(
-            parent=namespace,
-            delete_before_replace=True,
-            depends_on=[api_deployment, worker_deployment],
-        ),
+    ),
+    opts=pulumi.ResourceOptions(
+        parent=namespace,
+        delete_before_replace=True,
     ),
 )
-# Deploy Space
-space_component = 'space'
-space_label = {'component': space_component}
-space_labels = {**app_label, **space_label}
 
-space_deployment = apps.v1.Deployment(
-    f'{app_name}-space-deployment',
-    api_version='apps/v1',
-    kind='Deployment',
-    metadata=core.v1.ObjectMeta(
-        labels=space_labels, name=app_name, namespace=namespace_name
+
+frontend_service = core.v1.Service(
+    f'{app_name}-{frontend_component}-service',
+    metadata=meta.v1.ObjectMetaArgs(
+        name=app_name,
+        labels=frontend_labels,
+        namespace=namespace_name,
     ),
-    spec=apps.v1.DeploymentSpecArgs(
-        replicas=1,
-        selector=core.v1.LabelSelectorArgs(match_labels=space_labels),
-        template=core.v1.PodTemplateSpecArgs(
-            metadata=core.v1.ObjectMetaArgs(labels=space_labels),
-            spec=core.v1.PodSpecArgs(
-                containers=[
-                    core.v1.ContainerArgs(
-                        name=space_component,
-                        image=f'makeplane/plane-space:{app_version}',
-                        restart_policy='Always',
-                        command=[
-                            '/usr/local/bin/start.sh space/server.js space'
-                        ],
-                        env_from=core.v1.EnvFromSourceArgs(
-                            config_map_ref=core.v1.ConfigMapEnvSourceArgs(
-                                name=space_config_map.metadata['name']
-                            )
-                        ),
-                    ),
-                ]
-            ),
-        ),
-        opts=pulumi.ResourceOptions(
-            parent=namespace,
-            delete_before_replace=True,
-            depends_on=[api_deployment, worker_deployment, web_deployment],
-        ),
+    spec=core.v1.ServiceSpecArgs(
+        type='ClusterIP',
+        selector=frontend_labels,
+        ports=[
+            core.v1.ServicePortArgs(
+                name=app_name,
+                port=3000,
+                target_port=3000,
+            )
+        ],
+    ),
+    opts=pulumi.ResourceOptions(
+        parent=frontend_deployment,
+        delete_before_replace=True,
+    ),
+)
+
+api_service = core.v1.Service(
+    f'{app_name}-{api_component}-service',
+    metadata=meta.v1.ObjectMetaArgs(
+        name=f'{app_name}-api',
+        labels=api_labels,
+        namespace=namespace_name,
+    ),
+    spec=core.v1.ServiceSpecArgs(
+        type='ClusterIP',
+        selector=api_labels,
+        ports=[
+            core.v1.ServicePortArgs(
+                name='http',
+                port=8000,
+                target_port=8000,
+                protocol='TCP',
+            )
+        ],
+    ),
+    opts=pulumi.ResourceOptions(
+        parent=backend_deployment,
+        delete_before_replace=True,
+    ),
+)
+
+
+spaces_service = core.v1.Service(
+    f'{app_name}-{space_component}-service',
+    metadata=meta.v1.ObjectMetaArgs(
+        name=f'{app_name}-spaces',
+        labels=api_labels,
+        namespace=namespace_name,
+    ),
+    spec=core.v1.ServiceSpecArgs(
+        type='ClusterIP',
+        selector=api_labels,
+        ports=[
+            core.v1.ServicePortArgs(
+                name='http',
+                port=3001,
+                target_port=3001,
+                protocol='TCP',
+            )
+        ],
+    ),
+    opts=pulumi.ResourceOptions(
+        parent=backend_deployment,
+        delete_before_replace=True,
     ),
 )

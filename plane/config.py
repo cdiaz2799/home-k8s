@@ -12,7 +12,7 @@ app_label = {'app': f'{app_name}'}
 app_version = config.get('plane-version', default='latest')
 enable_openauth = config.get_int('enable-openauth', default=0)
 fqdn = config.require('fqdn')
-redis_host = 'plane-redis'
+redis_host = 'redis'
 redis_port = '6379'
 
 # Setup Namespace
@@ -31,8 +31,8 @@ web_config_map = k8s.core.v1.ConfigMap(
         name='web-config', namespace=namespace_name
     ),
     data={
-        'NEXT_PUBLIC_ENABLE_OAUTH': str(enable_openauth),
-        'NEXT_PUBLIC_DEPLOY_URL': lambda url: fqdn + '/spaces',
+        'NEXT_PUBLIC_ENABLE_OAUTH': '0',
+        'NEXT_PUBLIC_DEPLOY_URL': f'{fqdn}/spaces',
     },
     opts=pulumi.ResourceOptions(parent=namespace, delete_before_replace=True),
 )
@@ -45,7 +45,7 @@ space_config_map = k8s.core.v1.ConfigMap(
         name='spaces-config', namespace=namespace_name
     ),
     data={
-        'NEXT_PUBLIC_ENABLE_OAUTH': str(enable_openauth),
+        'NEXT_PUBLIC_ENABLE_OAUTH': '0',
     },
     opts=pulumi.ResourceOptions(parent=namespace, delete_before_replace=True),
 )

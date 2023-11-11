@@ -12,14 +12,6 @@ tier_label = {'tier': 'backend'}
 app_labels = {**app_label, **component_label, **tier_label}
 volume_name = f'{app_name}-{component_name}-pvc'
 
-db_pvc = pvc.K8sPVC(
-    volume_name,
-    namespace=namespace_name,
-    app_label=app_label,
-    volume_size='1Gi',
-    opts=pulumi.ResourceOptions(parent=namespace, protect=True),
-)
-
 db_deployment = apps.v1.Deployment(
     f'{app_name}-{component_name}-deployment',
     metadata={
@@ -57,9 +49,7 @@ db_deployment = apps.v1.Deployment(
                 'volumes': [
                     {
                         'name': volume_name,
-                        'persistentVolumeClaim': {
-                            'claimName': db_pvc.pvc.metadata['name']
-                        },
+                        'persistentVolumeClaim': {'claimName': volume_name},
                     }
                 ],
             },
@@ -88,4 +78,12 @@ db_service = core.v1.Service(
     opts=pulumi.ResourceOptions(
         parent=db_deployment, delete_before_replace=True
     ),
+)
+
+db_pvc = pvc.K8sPVC(
+    volume_name,
+    namespace=namespace_name,
+    app_label=app_label,
+    volume_size='1Gi',
+    opts=pulumi.ResourceOptions(parent=namespace, protect=True),
 )
